@@ -33,8 +33,25 @@ export default function App() {
             {text: 'ok', onPress: () => console.log('pressed')}
           ]
         )
+        return 
       }
     })
+  }, [])
+
+  useEffect(() => {
+    // responds on tap
+    const backgroundSub = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log(response)
+    })
+    // allows us to define fundctionn when an incoming notification is received while the app is running
+    const foregroundSub = Notifications.addNotificationReceivedListener(notification => {
+      console.log(notification)
+    })
+
+    return () => {
+      foregroundSub.remove()
+      backgroundSub.remove()
+    }
   }, [])
 
   const triggerNotificationHandler = () => {
