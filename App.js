@@ -1,5 +1,5 @@
 import { StatusBar } from 'expo-status-bar';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, Text, View, Button, Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications'
 import * as Permissions from 'expo-permissions'
@@ -15,6 +15,8 @@ Notifications.setNotificationHandler({
 })
 
 export default function App() {
+
+  const [ token, setToken ] = useState(null)
 
   useEffect(() => {
     // this will do nothing on Android but is necessary to enable local and push notifications on iOS
@@ -42,7 +44,7 @@ export default function App() {
       return Notifications.getExpoPushTokenAsync()
     })
     .then(data => {
-      const token = data.data
+      setToken(data.data)
       console.log('token - ', Platform.OS, token)
     })
     .catch(error => {
@@ -70,14 +72,29 @@ export default function App() {
   }, [])
 
   const triggerNotificationHandler = () => {
-    Notifications.scheduleNotificationAsync({
-      content: {
-        title: 'first!',
-        body: 'you have been notified'
+    // Notifications.scheduleNotificationAsync({
+    //   content: {
+    //     title: 'first!',
+    //     body: 'you have been notified'
+    //   },
+    //   trigger: {
+    //     seconds: 5
+    //   }
+    // })
+    // send an HTTP request to another device via expo servers and
+    fetch('https://exp.host/--/api/v2/push/send', {
+      method: 'post',
+      headers: {
+        'accept': 'application/json',
+        'accept-encoding': 'gzip, deflate',
+        'content-type': 'application/json'
       },
-      trigger: {
-        seconds: 5
-      }
+      body: JSON.stringify({
+        to: token,
+        data: { extradata: 'some data' },
+        title: 'sent via the app',
+        body: 'this is sent programatically via expo server!'
+      })
     })
   }
 
@@ -97,3 +114,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 });
+
+// look into expo push notification SDKs for Node and RoR
