@@ -7,8 +7,10 @@ import * as Permissions from 'expo-permissions'
 // define how incoming notofications are handled if the app is running
 // this will let the system know what to do with an incoming notification
 Notifications.setNotificationHandler({
-  handleNotification: () => {
-    return {}
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true
+    }
   }
 })
 
