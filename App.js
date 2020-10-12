@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React, { useEffect } from 'react';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Platform } from 'react-native';
 import * as Notifications from 'expo-notifications'
 import * as Permissions from 'expo-permissions'
 
@@ -30,7 +30,7 @@ export default function App() {
           'notifications denied', 
           'we will not be able to send you notifications', 
           [
-            {text: 'ok', onPress: () => console.log('pressed')}
+            {text: 'ok', onPress: () => console.log('pressed', Platform.OS)}
           ]
         )
         return 
@@ -41,16 +41,25 @@ export default function App() {
     .then(() => {
       return Notifications.getExpoPushTokenAsync()
     })
-    .then(data => console.log(data))
+    .then(data => {
+      const token = data.data
+      console.log('token - ', Platform.OS, token)
+    })
+    .catch(error => {
+      console.log(error)
+      return null
+    })
   }, [])
 
   useEffect(() => {
     // responds on tap
     const backgroundSub = Notifications.addNotificationResponseReceivedListener(response => {
+      console.log('response - ', Platform.OS)
       console.log(response)
     })
     // allows us to define fundctionn when an incoming notification is received while the app is running
     const foregroundSub = Notifications.addNotificationReceivedListener(notification => {
+      console.log('notification - ', Platform.OS)
       console.log(notification)
     })
 
