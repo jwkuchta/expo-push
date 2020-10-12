@@ -17,7 +17,7 @@ Notifications.setNotificationHandler({
 export default function App() {
 
   useEffect(() => {
-    // this will do nothing on Android
+    // this will do nothing on Android but is necessary to enable local and push notifications on iOS
     Permissions.getAsync(Permissions.NOTIFICATIONS).then(statusObj => {
       if (statusObj.status !== 'granted') {
         return Permissions.askAsync(Permissions.NOTIFICATIONS)
@@ -36,6 +36,12 @@ export default function App() {
         return 
       }
     })
+    // after we get permissions we need to sign our app up with google/iOS notification servers
+    // we need to get a push token 
+    .then(() => {
+      return Notifications.getExpoPushTokenAsync()
+    })
+    .then(data => console.log(data))
   }, [])
 
   useEffect(() => {
